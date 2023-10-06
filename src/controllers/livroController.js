@@ -1,7 +1,8 @@
 import livro from "../models/Livro.js";
+import { autor } from "../models/Autor.js";
 
 class LivroController {
-    static async listarLivros (req, res) {
+    static async listarLivros(req, res) {
         try {
             const listaLivros = await livro.find({});
             res.status(200).json(listaLivros);
@@ -12,7 +13,7 @@ class LivroController {
         }
     }
 
-    static async listarLivroPorId (req, res) {
+    static async listarLivroPorId(req, res) {
         try {
             const id = req.params.id;
             const livroEncontrado = await livro.findById(id);
@@ -24,12 +25,15 @@ class LivroController {
         }
     }
 
-    static async cadastrarLivro (req, res) {
+    static async cadastrarLivro(req, res) {
+        const novoLivro = req.body;
         try {
-            const novoLivro = await livro.create(req.body);
+            const autorEncontrado = await autor.findById(novoLivro.autor);
+            const livroCompleto = { ...novoLivro, autor: { ...autorEncontrado._doc }};
+            const livroCriado = await livro.create(livroCompleto);
             res.status(201).json({
                 message: "criado com sucesso",
-                livro: novoLivro
+                livro: livroCriado
             });
         } catch (erro) {
             res.status(500).json({
@@ -38,7 +42,7 @@ class LivroController {
         }
     }
 
-    static async atualizarLivro (req, res) {
+    static async atualizarLivro(req, res) {
         try {
             const id = req.params.id;
             await livro.findByIdAndUpdate(id, req.body);
@@ -52,7 +56,7 @@ class LivroController {
         }
     }
 
-    static async deletarLivro (req, res) {
+    static async deletarLivro(req, res) {
         try {
             const id = req.params.id;
             await livro.findByIdAndDelete(id, req.body);
@@ -64,7 +68,7 @@ class LivroController {
                 message: `${erro.message} - falha na exclusão do livro`
             })
         }
-    }    
+    }
 };
 
 export default LivroController;
