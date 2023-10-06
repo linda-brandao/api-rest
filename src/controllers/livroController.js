@@ -38,7 +38,7 @@ class LivroController {
         }
     }
 
-    static async atulizarLivro (req, res) {
+    static async atualizarLivro (req, res) {
         try {
             const id = req.params.id;
             await livro.findByIdAndUpdate(id, req.body);
